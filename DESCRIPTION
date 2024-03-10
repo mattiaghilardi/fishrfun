@@ -1,0 +1,19 @@
+Package: fishrfun
+Title: Fish-specific R functions
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Mattia",
+           family = "Ghilardi",
+           role = c("aut", "cre"),
+           email = "mattia.ghilardi91@gmail.com",
+           comment = c(ORCID = "0000-0001-9592-7252"))
+Description: A tool to facilitate and accelerate the analysis of fish
+    community data, which can derive from a variety of survey techniques
+    and often include taxa identified to different taxonomic levels.
+License: MIT + file LICENSE
+URL: https://github.com/mattiaghilardi/fishrfun
+BugReports: https://github.com/mattiaghilardi/fishrfun/issues
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
