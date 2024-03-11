@@ -2,10 +2,7 @@ Package: fishrfun
 Title: Fish-specific R functions
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Mattia",
-           family = "Ghilardi",
-           role = c("aut", "cre"),
-           email = "mattia.ghilardi91@gmail.com",
+    person("Mattia", "Ghilardi", , "mattia.ghilardi91@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9592-7252"))
 Description: A tool to facilitate and accelerate the analysis of fish
     community data, which can derive from a variety of survey techniques
@@ -21,6 +18,9 @@ Imports:
     rfishbase (>= 3.1.9),
     rlang,
     stringr
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
