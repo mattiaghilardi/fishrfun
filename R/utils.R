@@ -71,3 +71,25 @@ load_ECoF_db <- function(version = latest_release("ECoF")) {
   }
   db
 }
+
+#' Find best match for misspelled scientific names
+#'
+#' @param name_errors A character vector of non valid names
+#' @param valid_names A character vector of valid names
+#' @param maxDist Maximum distance for approximate matching. See [stringdist::amatch()]
+#' @param ... Other arguments passed to [stringdist::amatch()],
+#' such as `method` (default to "osa")
+#'
+#' @importFrom stringdist amatch
+#'
+#' @return A character vector
+#' @noRd
+find_best_match <- function(name_errors, valid_names, maxDist = 3, ...) {
+  # Note: default method may not always be the best
+  # e.g. "Blenidae" would return "Belonidae" instead of "Blenniidae"
+  # method = "lcs" (longest common substring) may be more appropriate for misspelled names
+  valid_names[stringdist::amatch(name_errors,
+                                 valid_names,
+                                 maxDist = maxDist,
+                                 ...)]
+}

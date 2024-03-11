@@ -8,7 +8,7 @@
 #' @importFrom rfishbase load_taxa
 #' @importFrom rlang is_null arg_match
 #'
-#' @return A data frame
+#' @return A tibble
 #'
 #' @author Mattia Ghilardi, \email{mattia.ghilardi91@@gmail.com}
 #'
@@ -27,7 +27,8 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
   version <- check_version(db, version)
 
   if (db == "FB") {
-    as.data.frame(rfishbase::load_taxa(version = version))
+    # added collect only for version<4 as apparently the argument didn't work
+    dplyr::collect(rfishbase::load_taxa(version = version, collect = TRUE))
   } else if (db == "ECoF") {
     db <- load_ECoF_db(version)
     if (!rlang::is_null(db)) db$taxonomy

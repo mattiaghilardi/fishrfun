@@ -14,9 +14,12 @@ Depends:
     R (>= 3.5.0)
 Imports: 
     cli,
+    dplyr,
+    fishtree,
     RCurl,
     rfishbase (>= 3.1.9),
     rlang,
+    stringdist,
     stringr
 Suggests: 
     testthat (>= 3.0.0)

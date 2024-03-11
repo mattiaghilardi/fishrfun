@@ -14,7 +14,7 @@ available; see \code{\link[rfishbase:available_releases]{rfishbase::available_re
 and \code{\link[=available_ECoF_releases]{available_ECoF_releases()}} for the Eschmeyer's Catalog of Fishes}
 }
 \value{
-A data frame
+A tibble
 }
 \description{
 Load fish taxonomy
