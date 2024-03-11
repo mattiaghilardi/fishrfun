@@ -15,6 +15,6 @@ You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("mattiaghilardi/fishrfun")
+# install.packages("pak")
+pak::pak("mattiaghilardi/fishrfun")
 ```
