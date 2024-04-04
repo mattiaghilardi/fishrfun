@@ -7,6 +7,6 @@ test_that("We can load fish taxonomy", {
 
   df <- load_fish_taxonomy(db = "ECoF")
   expect_s3_class(df, "data.frame")
-  expect_equal(ncol(df), 6)
+  expect_equal(ncol(df), 7)
 
 })
