@@ -232,7 +232,7 @@ check_fish_names_FTOL <- function(names,
                           wrap = TRUE)
 
     # Find best match for misspelled names
-    suggested <- unique_taxa[stringdist::amatch(error, unique_taxa, maxDist = 3)]
+    suggested <- find_best_match(error, unique_taxa)
 
     msg2 <- paste("Approximate string matching for misspelled names returned the
                   following {length(suggested)} potential", rank,
