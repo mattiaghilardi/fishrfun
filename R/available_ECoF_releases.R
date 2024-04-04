@@ -7,7 +7,7 @@
 #' @inherit load_fish_taxonomy author
 #'
 #' @importFrom RCurl getURLContent
-#' @importFrom stringr str_extract_all
+#' @importFrom stringi stri_extract_all_regex
 #'
 #' @export
 #'
@@ -18,7 +18,7 @@
 available_ECoF_releases <- function() {
   url <- "https://github.com/mattiaghilardi/ECoFarchive/tree/main/archive"
   filenames <- RCurl::getURLContent(url) |>
-    stringr::str_extract_all('(?<="ECoF_).+?(?=.rds)')
+    stringi::stri_extract_all_regex('(?<="ECoF_).+?(?=.rds)')
   sort(filenames[[1]], decreasing = TRUE) # latest first
 }
 
