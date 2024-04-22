@@ -16,6 +16,7 @@ Imports:
     cli,
     dplyr,
     fishtree,
+    magrittr (>= 1.5),
     RCurl,
     rfishbase (>= 3.1.9),
     rlang,

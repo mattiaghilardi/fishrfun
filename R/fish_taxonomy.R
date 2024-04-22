@@ -8,6 +8,7 @@
 #' @importFrom rfishbase load_taxa
 #' @importFrom rlang is_null arg_match
 #' @importFrom dplyr collect
+#' @importFrom magrittr `%>%`
 #'
 #' @return A tibble
 #'
@@ -29,7 +30,8 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
 
   if (db == "FB") {
     # added collect only for version<4 as apparently the argument didn't work
-    suppressMessages(rfishbase::load_taxa(version = version, collect = TRUE)) %>%
+    rfishbase::load_taxa(version = version, collect = TRUE) %>%
+      suppressMessages() %>%
       dplyr::collect() %>%
       # remove SpecCode 0 and 1 which correspond to "Genus Species" and "Genus Sp"
       dplyr::filter(!is.na(Class))
