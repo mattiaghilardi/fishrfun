@@ -30,6 +30,17 @@ check_logical <- function(x,
   }
 }
 
+check_length <- function(x,
+                         y,
+                         arg1 = rlang::caller_arg(x),
+                         arg2 = rlang::caller_arg(y),
+                         call = rlang::caller_env()) {
+  if (length(x) != length(y)) {
+    cli::cli_abort("{.arg {arg1}} and {.arg {arg2}} must have the same length.",
+                   call = call)
+  }
+}
+
 check_version <- function(db = c("FB", "ECoF"),
                           version = "latest",
                           call = rlang::caller_env()) {

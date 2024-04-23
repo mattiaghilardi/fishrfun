@@ -21,7 +21,9 @@ Imports:
     rfishbase (>= 3.1.9),
     rlang,
     stringdist,
-    stringi
+    stringi,
+    taxadb (>= 0.2.1),
+    tidyr
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
