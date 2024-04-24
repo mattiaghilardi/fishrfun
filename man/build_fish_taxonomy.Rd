@@ -41,7 +41,7 @@ A data frame including the supplied names, ranks and taxonomy
 Build taxonomy for a list of fish taxa identified at different taxonomic ranks
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 species <- c("Dentex dentex", "Mullus sp.", "Balistidae spp.",
              "Carangiformes spp.", "Elasmobranchii spp.")
 # Declaring level of identification
@@ -49,7 +49,7 @@ ranks = c("species", "genus", "family", "order", "class")
 build_fish_taxonomy(species, id.rank = ranks)
 # Letting the function guess the level of identification
 build_fish_taxonomy(species)
-}
+\dontshow{\}) # examplesIf}
 }
 \author{
 Mattia Ghilardi, \email{mattia.ghilardi91@gmail.com}

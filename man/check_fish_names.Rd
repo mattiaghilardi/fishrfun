@@ -34,7 +34,7 @@ If \code{rank = "Species"}, the data frame also includes valid names returned by
 Check fish scientific names
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Correct names in FishBase
 check_fish_names(c("Boops boops", "Sparus aurata"))
 # Misspelled family name and suggested name
@@ -46,7 +46,7 @@ errors
 # Non-valid species name, suggested name and valid name
 errors <- check_fish_names(c("Scarus ghobban", "Ostracion cubicus"))
 errors
-}
+\dontshow{\}) # examplesIf}
 }
 \author{
 Mattia Ghilardi, \email{mattia.ghilardi91@gmail.com}

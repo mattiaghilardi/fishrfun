@@ -33,15 +33,14 @@ following two elements:
 Check scientific names and sampled species in the Fish Tree of Life
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Correct names with genetic data
 check_fish_names_FTOL(c("Balistapus undulatus", "Plectropomus leopardus"),
                       sampled = TRUE)
 # Misspelled family name and suggested name
 errors <- check_fish_names_FTOL(c("Gobidae", "Sparidae"), rank = "Family")
 errors
-}
-
+\dontshow{\}) # examplesIf}
 }
 \references{
 Rabosky D. L. et al. (2018) An inverse latitudinal gradient in

@@ -27,9 +27,9 @@ valid species match a single name
 Validate species names in the Eschmeyer's Catalog of Fishes
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 validate_names_ECoF("Ostracion cubicus")
-}
+\dontshow{\}) # examplesIf}
 }
 \author{
 Mattia Ghilardi, \email{mattia.ghilardi91@gmail.com}

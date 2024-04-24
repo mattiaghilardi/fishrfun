@@ -16,11 +16,9 @@
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' load_fish_taxonomy()
 #' load_fish_taxonomy("ECoF")
-#' }
 load_fish_taxonomy <- function(db = c("FB", "ECoF"),
                                version = "latest") {
 
@@ -70,8 +68,7 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' species <- c("Dentex dentex", "Mullus sp.", "Balistidae spp.",
 #'              "Carangiformes spp.", "Elasmobranchii spp.")
 #' # Declaring level of identification
@@ -79,7 +76,6 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
 #' build_fish_taxonomy(species, id.rank = ranks)
 #' # Letting the function guess the level of identification
 #' build_fish_taxonomy(species)
-#' }
 build_fish_taxonomy <- function(names,
                                 id.rank = NULL,
                                 check_names = TRUE,

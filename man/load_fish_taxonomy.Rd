@@ -20,10 +20,10 @@ A tibble
 Load fish taxonomy
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 load_fish_taxonomy()
 load_fish_taxonomy("ECoF")
-}
+\dontshow{\}) # examplesIf}
 }
 \author{
 Mattia Ghilardi, \email{mattia.ghilardi91@gmail.com}

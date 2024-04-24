@@ -18,8 +18,7 @@
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' # Correct names in FishBase
 #' check_fish_names(c("Boops boops", "Sparus aurata"))
 #' # Misspelled family name and suggested name
@@ -31,7 +30,6 @@
 #' # Non-valid species name, suggested name and valid name
 #' errors <- check_fish_names(c("Scarus ghobban", "Ostracion cubicus"))
 #' errors
-#' }
 check_fish_names <- function(names,
                              rank = "Species",
                              db = c("FB", "ECoF"),
@@ -118,10 +116,8 @@ validate_fish_names <- function(species_list,
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' validate_names_ECoF("Ostracion cubicus")
-#' }
 validate_names_ECoF <- function(species_list,
                                 USE.NAMES = FALSE,
                                 version = latest_release("ECoF")) {
@@ -170,15 +166,13 @@ validate_names_ECoF <- function(species_list,
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' # Correct names with genetic data
 #' check_fish_names_FTOL(c("Balistapus undulatus", "Plectropomus leopardus"),
 #'                       sampled = TRUE)
 #' # Misspelled family name and suggested name
 #' errors <- check_fish_names_FTOL(c("Gobidae", "Sparidae"), rank = "Family")
 #' errors
-#' }
 #'
 #' @references
 #' Rabosky D. L. et al. (2018) An inverse latitudinal gradient in
