@@ -11,7 +11,7 @@ License: MIT + file LICENSE
 URL: https://github.com/mattiaghilardi/fishrfun
 BugReports: https://github.com/mattiaghilardi/fishrfun/issues
 Depends: 
-    R (>= 3.5.0)
+    R (>= 4.0)
 Imports: 
     cli,
     dplyr,
