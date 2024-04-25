@@ -13,9 +13,9 @@ A character vector
 Lists all available releases (year.month format).
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 available_ECoF_releases()
-}
+\dontshow{\}) # examplesIf}
 }
 \author{
 Mattia Ghilardi, \email{mattia.ghilardi91@gmail.com}

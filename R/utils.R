@@ -66,8 +66,6 @@ check_version <- function(db = c("FB", "ECoF"),
 #'
 #' @param version The database version to use
 #'
-#' @importFrom cli cli_alert_warning
-#'
 #' @return The database
 #' @noRd
 load_ECoF_db <- function(version = latest_release("ECoF")) {
@@ -77,7 +75,7 @@ load_ECoF_db <- function(version = latest_release("ECoF")) {
   on.exit(close(con))
   db <- try(readRDS(con), silent = TRUE)
   if (inherits(db, "try-error")) {
-    cli::cli_alert_warning("Failed to load ECoF database", class = "try-error")
+    cli::cli_inform("Failed to load ECoF database", class = "try-error")
     return(invisible(NULL))
   }
   db

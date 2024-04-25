@@ -11,15 +11,15 @@
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' available_ECoF_releases()
-#' }
 available_ECoF_releases <- function() {
   url <- "https://github.com/mattiaghilardi/ECoFarchive/tree/main/archive"
-  filenames <- RCurl::getURLContent(url) |>
-    stringi::stri_extract_all_regex('(?<="ECoF_).+?(?=.rds)')
-  sort(filenames[[1]], decreasing = TRUE) # latest first
+  RCurl::getURLContent(url) %>%
+    stringi::stri_extract_all_regex('(?<="ECoF_).+?(?=.rds)') %>%
+    unlist() %>%
+    unique() %>%
+    sort(decreasing = TRUE) # latest first
 }
 
 #' Get latest release of FishBase or ECoF
