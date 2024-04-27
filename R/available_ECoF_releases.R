@@ -14,12 +14,23 @@
 #' @examplesIf interactive()
 #' available_ECoF_releases()
 available_ECoF_releases <- function() {
+  check_internet()
   url <- "https://github.com/mattiaghilardi/ECoFarchive/tree/main/archive"
-  RCurl::getURLContent(url) %>%
-    stringi::stri_extract_all_regex('(?<="ECoF_).+?(?=.rds)') %>%
-    unlist() %>%
-    unique() %>%
-    sort(decreasing = TRUE) # latest first
+  call = rlang::caller_env()
+  tryCatch(
+    RCurl::getURLContent(url) %>%
+      stringi::stri_extract_all_regex('(?<="ECoF_).+?(?=.rds)') %>%
+      unlist() %>%
+      unique() %>%
+      sort(decreasing = TRUE), # latest first
+    error = function(e) {
+      cli::cli_abort(c(
+        "!" = "Listing of ECoF releases failed with error:",
+        "{e}"),
+        call = call
+      )
+    }
+  )
 }
 
 #' Get latest release of FishBase or ECoF

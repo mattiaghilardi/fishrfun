@@ -35,7 +35,7 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
       dplyr::filter(!is.na(Class))
   } else if (db == "ECoF") {
     db <- load_ECoF_db(version)
-    if (!rlang::is_null(db)) db$taxonomy
+    db$taxonomy
   }
 }
 

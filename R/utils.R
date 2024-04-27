@@ -2,6 +2,7 @@
 #'
 #' @importFrom rlang caller_arg caller_env is_string is_character is_logical
 #' @importFrom cli cli_abort
+#' @importFrom curl has_internet
 #' @noRd
 check_string <- function(x,
                          arg = rlang::caller_arg(x),
@@ -62,6 +63,12 @@ check_version <- function(db = c("FB", "ECoF"),
   version
 }
 
+check_internet <- function(call = rlang::caller_env()) {
+  if (!curl::has_internet()) {
+    cli::cli_abort("No internet connection.", call = call)
+  }
+}
+
 #' Load Eschmeyer's Catalog of Fishes database
 #'
 #' @param version The database version to use
@@ -69,16 +76,22 @@ check_version <- function(db = c("FB", "ECoF"),
 #' @return The database
 #' @noRd
 load_ECoF_db <- function(version = latest_release("ECoF")) {
+  check_internet()
   url_dir <- "https://raw.githubusercontent.com/mattiaghilardi/ECoFarchive/main/archive"
   url_file <- paste0(url_dir, "/ECoF_", version, ".rds")
-  con <- url(url_file)
-  on.exit(close(con))
-  db <- try(readRDS(con), silent = TRUE)
-  if (inherits(db, "try-error")) {
-    cli::cli_inform("Failed to load ECoF database", class = "try-error")
-    return(invisible(NULL))
-  }
-  db
+  call = rlang::caller_env()
+  tryCatch({
+    con <- url(url_file)
+    suppressWarnings(readRDS(con))},
+    error = function(e) {
+      cli::cli_abort(c(
+        "!" = "Download of ECoF database failed with error:",
+        "{e}"),
+        call = call
+      )
+    },
+    finally = close(con)
+  )
 }
 
 #' Find best match for misspelled scientific names
