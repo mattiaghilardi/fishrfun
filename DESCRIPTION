@@ -18,6 +18,7 @@ Imports:
     dplyr,
     fishtree,
     magrittr (>= 1.5),
+    memoise,
     RCurl,
     rfishbase (>= 3.1.9),
     rlang,

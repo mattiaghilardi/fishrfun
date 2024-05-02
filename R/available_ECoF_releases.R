@@ -8,30 +8,33 @@
 #'
 #' @importFrom RCurl getURLContent
 #' @importFrom stringi stri_extract_all_regex
+#' @importFrom memoise memoise
 #'
 #' @export
 #'
 #' @examplesIf interactive()
 #' available_ECoF_releases()
-available_ECoF_releases <- function() {
-  check_internet()
-  url <- "https://github.com/mattiaghilardi/ECoFarchive/tree/main/archive"
-  call = rlang::caller_env()
-  tryCatch(
-    RCurl::getURLContent(url) %>%
-      stringi::stri_extract_all_regex('(?<="ECoF_).+?(?=.rds)') %>%
-      unlist() %>%
-      unique() %>%
-      sort(decreasing = TRUE), # latest first
-    error = function(e) {
-      cli::cli_abort(c(
-        "!" = "Listing of ECoF releases failed with error:",
-        "{e}"),
-        call = call
-      )
-    }
-  )
-}
+available_ECoF_releases <- memoise::memoise(
+  function() {
+    check_internet()
+    url <- "https://github.com/mattiaghilardi/ECoFarchive/tree/main/archive"
+    call = rlang::caller_env()
+    tryCatch(
+      RCurl::getURLContent(url) %>%
+        stringi::stri_extract_all_regex('(?<="ECoF_).+?(?=.rds)') %>%
+        unlist() %>%
+        unique() %>%
+        sort(decreasing = TRUE), # latest first
+      error = function(e) {
+        cli::cli_abort(c(
+          "!" = "Listing of ECoF releases failed with error:",
+          "{e}"),
+          call = call
+        )
+      }
+    )
+  }
+)
 
 #' Get latest release of FishBase or ECoF
 #'

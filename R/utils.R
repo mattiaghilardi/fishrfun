@@ -75,24 +75,26 @@ check_internet <- function(call = rlang::caller_env()) {
 #'
 #' @return The database
 #' @noRd
-load_ECoF_db <- function(version = latest_release("ECoF")) {
-  check_internet()
-  url_dir <- "https://raw.githubusercontent.com/mattiaghilardi/ECoFarchive/main/archive"
-  url_file <- paste0(url_dir, "/ECoF_", version, ".rds")
-  call = rlang::caller_env()
-  tryCatch({
-    con <- url(url_file)
-    suppressWarnings(readRDS(con))},
-    error = function(e) {
-      cli::cli_abort(c(
-        "!" = "Download of ECoF database failed with error:",
-        "{e}"),
-        call = call
-      )
-    },
-    finally = close(con)
-  )
-}
+load_ECoF_db <- memoise::memoise(
+  function(version = latest_release("ECoF")) {
+    check_internet()
+    url_dir <- "https://raw.githubusercontent.com/mattiaghilardi/ECoFarchive/main/archive"
+    url_file <- paste0(url_dir, "/ECoF_", version, ".rds")
+    call = rlang::caller_env()
+    tryCatch({
+      con <- url(url_file)
+      suppressWarnings(readRDS(con))},
+      error = function(e) {
+        cli::cli_abort(c(
+          "!" = "Download of ECoF database failed with error:",
+          "{e}"),
+          call = call
+        )
+      },
+      finally = close(con)
+    )
+  }
+)
 
 #' Find best match for misspelled scientific names
 #'
