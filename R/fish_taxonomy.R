@@ -262,7 +262,8 @@ build_fish_taxonomy <- function(names,
     if (nrow(error) > 0) {
       f <- function() {
         cli::cli_alert_danger("{.val {nrow(error)}} {?name/names} {?is/are}
-                              incorrect or misspelled:")
+                              incorrect or misspelled:",
+                              wrap = TRUE)
         cli::cli_text("")
         print(error)
         cli::cli_text("")
