@@ -48,15 +48,13 @@
 #'
 #' @inherit load_fish_taxonomy author
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' # List of taxa identified to species, genus or family level
 #' taxa <- c("Caesio cuning", "Acanthurus sp.", "Chaetodontidae spp.")
 #' # Aspect ratio
 #' aspect_ratio_FB(taxa)
 #' # User-specified traits, e.g. eye diameter standardised by head length (ED/HL)
 #' morphometric_traits_FB(taxa, eye_diameter = ED/HL)
-#' }
 #'
 #' @name morphometric_traits_FB
 #' @export
@@ -64,32 +62,10 @@ morphometric_traits_FB <- function(names,
                                    ...,
                                    FB_version = latest_release("FB")) {
 
+  # Checks
   check_string(FB_version)
   version <- check_version("FB", FB_version)
-
-  # Checks
-  taxo_colnames <- c("id.rank", "species", "genus", "family", "order", "class")
-  if(!is.data.frame(names) |
-     !length(names(names)) == 7 |
-     !all(colnames(names)[2:7] == taxo_colnames)
-  ) {
-    if (rlang::is_character(names)) {
-      # Build taxonomy
-      names <- build_fish_taxonomy(names = names,
-                                   id.rank = NULL,
-                                   check_names = TRUE,
-                                   colname = "names",
-                                   db = "FB",
-                                   version = version)
-    } else {
-      call <- rlang::caller_env()
-      arg <- rlang::caller_arg(names)
-      cli::cli_abort("{.arg {arg}} must be a data frame created with
-                     {.fn build_fish_taxonomy} or a character vector
-                     of taxonomic names.",
-                     call = call)
-    }
-  }
+  names <- check_names_arg(names, version = version)
 
   # Load taxonomy
   taxo <- load_fish_taxonomy("FB", version = version)

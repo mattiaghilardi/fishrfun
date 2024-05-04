@@ -69,6 +69,35 @@ check_internet <- function(call = rlang::caller_env()) {
   }
 }
 
+# Check the `names` argument of functions that retrieve data from FishBase
+# Return the built taxonomy
+check_names_arg <- function(names,
+                            version,
+                            arg = rlang::caller_arg(names),
+                            call = rlang::caller_env()) {
+  taxo_colnames <- c("id.rank", "species", "genus", "family", "order", "class")
+  if(!is.data.frame(names) |
+     !length(names(names)) == 7 |
+     !all(colnames(names)[2:7] == taxo_colnames)
+  ) {
+    if (rlang::is_character(names)) {
+      # Build taxonomy
+      names <- build_fish_taxonomy(names = names,
+                                   id.rank = NULL,
+                                   check_names = TRUE,
+                                   colname = "names",
+                                   db = "FB",
+                                   version = version)
+    } else {
+      cli::cli_abort("{.arg {arg}} must be a data frame created with
+                     {.fn build_fish_taxonomy} or a character vector
+                     of taxonomic names.",
+                     call = call)
+    }
+  }
+  names
+}
+
 #' Load Eschmeyer's Catalog of Fishes database
 #'
 #' @param version The database version to use
