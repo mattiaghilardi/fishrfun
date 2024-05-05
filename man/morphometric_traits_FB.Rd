@@ -63,15 +63,14 @@ Please run \code{names(rfishbase::morphometrics())} to see all variable names in
 the table.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # List of taxa identified to species, genus or family level
 taxa <- c("Caesio cuning", "Acanthurus sp.", "Chaetodontidae spp.")
 # Aspect ratio
 aspect_ratio_FB(taxa)
 # User-specified traits, e.g. eye diameter standardised by head length (ED/HL)
 morphometric_traits_FB(taxa, eye_diameter = ED/HL)
-}
-
+\dontshow{\}) # examplesIf}
 }
 \author{
 Mattia Ghilardi, \email{mattia.ghilardi91@gmail.com}
