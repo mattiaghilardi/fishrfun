@@ -180,8 +180,8 @@ morphometric_traits_FB <- function(names,
     out <- out %>%
       dplyr::select(-c(dplyr::ends_with(c(".s", ".g", ".f")))) %>%
       dplyr::mutate(trait_value = round(trait_value, 2)) %>%
-      dplyr::rename("{trait_names[1]}" := "trait_value",
-                    "{paste0(trait_names[1], '.rank')}" := "trait_rank")
+      dplyr::rename("{trait_names[i]}" := "trait_value",
+                    "{paste0(trait_names[i], '.rank')}" := "trait_rank")
   }
 
   out %>% dplyr::select(-c(2:7))
