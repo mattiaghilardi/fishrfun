@@ -93,6 +93,8 @@ morphometric_traits_FB <- function(names,
       dplyr::group_by(Species) %>%
       dplyr::mutate(trait_s = mean(trait, na.rm = TRUE)) %>%
       dplyr::ungroup() %>%
+      dplyr::select("Species", "Genus", "Family", "trait_s") %>%
+      dplyr::distinct() %>% # keep only 1 value per species
       dplyr::group_by(Genus) %>%
       dplyr::mutate(trait_g = mean(trait_s, na.rm = TRUE)) %>%
       dplyr::ungroup() %>%
