@@ -61,6 +61,7 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
 #'
 #' @importFrom tidyr separate
 #' @importFrom taxadb clean_names
+#' @importFrom stringi stri_trans_totitle
 #' @importFrom dplyr mutate case_when left_join pull select
 #' @importFrom dplyr bind_cols bind_rows distinct rename
 #' @importFrom cli cli_text
@@ -79,7 +80,7 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
 build_fish_taxonomy <- function(names,
                                 id.rank = NULL,
                                 check_names = TRUE,
-                                colname = "names",
+                                colname = "original_name",
                                 db = c("FB", "ECoF"),
                                 version = "latest") {
 
@@ -90,23 +91,33 @@ build_fish_taxonomy <- function(names,
   version <- check_version(db, version)
 
   # Clean species names
-  cleaned_names <- taxadb::clean_names(names, lowercase = FALSE)
+  cleaned_names <- taxadb::clean_names(names) %>%
+    stringi::stri_trans_totitle(type = "sentence")
 
   # Make data frame
-  df <- data.frame(names = names,
-                   cleaned_names = cleaned_names)
+  df <- data.frame(original_name = names,
+                   cleaned_name = cleaned_names)
+
+  # Open Nomenclature qualifiers relevant to fish
+  ON <- c("sp", "spp", "ssp", "aff", "cf", "cfr", "conf", "?", "inc", "ind", "indet", "nov")
+  # the "?" is already removed by taxadb::clean_names(binomial_only = TRUE),
+  # thus uncertain species with "?" will be considered identified to species level
+  # if `id.rank = NULL`
 
   # Split species names
   df <- df %>%
-    tidyr::separate(cleaned_names,
+    tidyr::separate(.data$cleaned_name,
                     into = c("gen", "spe"),
                     sep = " ",
                     remove = FALSE,
                     fill = "right") %>%
-    # Fix names such as labrid, pomacentrid to match family name
-    dplyr::mutate(gen = ifelse(endsWith(.data$gen, "id"),
-                               paste0(.data$gen, "ae"),
-                               .data$gen))
+    dplyr::mutate(
+      # Fix names such as "labrid", "pomacentrid" to match family names
+      gen = ifelse(endsWith(.data$gen, "id"),
+                   paste0(.data$gen, "ae"),
+                   .data$gen),
+      # Remove potential open nomenclature qualifiers
+      spe = ifelse(.data$spe %in% ON, NA, .data$spe))
 
   taxo <- load_fish_taxonomy(db, version)
   names(taxo) <- tolower(names(taxo))
@@ -129,7 +140,7 @@ build_fish_taxonomy <- function(names,
       dplyr::mutate(
         id.rank = id.rank,
         species = ifelse(id.rank == "species",
-                         .data$cleaned_names,
+                         .data$cleaned_name,
                          NA),
         genus = ifelse(id.rank %in% c("species", "genus"),
                        .data$gen,
@@ -169,96 +180,38 @@ build_fish_taxonomy <- function(names,
                                    !is.na(.data$genus) & is.na(.data$spe) ~ "genus",
                                    !is.na(.data$genus) & !is.na(.data$spe) ~ "species"),
         species = ifelse(id.rank == "species",
-                         .data$cleaned_names,
+                         .data$cleaned_name,
                          NA)
       )
   }
 
   # Check names
   if (check_names) {
-    error_spe <- error_gen <- error_fam <- error_ord <- error_cla <- NULL
-    if ("species" %in% df$id.rank) {
-      error_spe <- df %>%
-        dplyr::filter(id.rank == "species") %>%
-        dplyr::pull(.data$species) %>%
-        check_fish_names(rank = "Species",
-                         db = db,
-                         version = version) %>%
-        suppressMessages()
-      if (!rlang::is_null(error_spe)) {
-        error_spe <- df %>%
-          dplyr::filter(id.rank == "species" &
-                          .data$species %in% error_spe$supplied_name) %>%
-          dplyr::select("names", "id.rank") %>%
-          dplyr::bind_cols(error_spe)
-      }
-    }
-    if ("genus" %in% df$id.rank) {
-      error_gen <- df %>%
-        dplyr::filter(id.rank == "genus") %>%
-        dplyr::pull(.data$genus) %>%
-        check_fish_names(rank = "Genus",
-                         db = db,
-                         version = version) %>%
-        suppressMessages()
-      if (!rlang::is_null(error_gen)) {
-        error_gen <- df %>%
-          dplyr::filter(id.rank == "genus" &
-                          .data$genus %in% error_gen$supplied_name) %>%
-          dplyr::select("names", "id.rank") %>%
-          dplyr::bind_cols(error_gen)
-      }
-    }
-    if ("family" %in% df$id.rank) {
-      error_fam <- df %>%
-        dplyr::filter(id.rank == "family") %>%
-        dplyr::pull(.data$family) %>%
-        check_fish_names(rank = "Family",
-                         db = db,
-                         version = version) %>%
-        suppressMessages()
-      if (!rlang::is_null(error_fam)) {
-        error_fam <- df %>%
-          dplyr::filter(id.rank == "family" &
-                          .data$family %in% error_fam$supplied_name) %>%
-          dplyr::select("names", "id.rank") %>%
-          dplyr::bind_cols(error_fam)
-      }
-      if ("order" %in% df$id.rank) {
-        error_ord <- df %>%
-          dplyr::filter(id.rank == "order") %>%
-          dplyr::pull(.data$order) %>%
-          check_fish_names(rank = "Order",
-                           db = db,
-                           version = version) %>%
-          suppressMessages()
-        if (!rlang::is_null(error_ord)) {
-          error_ord <- df %>%
-            dplyr::filter(id.rank == "order" &
-                            .data$order %in% error_ord$supplied_name) %>%
-            dplyr::select("names", "id.rank") %>%
-            dplyr::bind_cols(error_ord)
+    error <- lapply(
+      c("Species", "Genus", "Family", "Order", "Class"),
+      function(x) {
+        x_low <- tolower(x)
+        if (x_low %in% df$id.rank) {
+          error_x <- df %>%
+            dplyr::filter(id.rank == x_low) %>%
+            dplyr::pull(.data[[x_low]]) %>%
+            check_fish_names(rank = x,
+                             db = db,
+                             version = version) %>%
+            suppressMessages()
+          if (!rlang::is_null(error_x)) {
+            error_x <- df %>%
+              dplyr::filter(id.rank == x_low &
+                              .data[[x_low]] %in% error_x$supplied_name) %>%
+              dplyr::select("original_name", "id.rank") %>%
+              dplyr::bind_cols(error_x)
+          }
+          error_x
         }
       }
-      if ("class" %in% df$id.rank) {
-        error_cla <- df %>%
-          dplyr::filter(id.rank == "class") %>%
-          dplyr::pull(.data$class) %>%
-          check_fish_names(rank = "Class",
-                           db = db,
-                           version = version) %>%
-          suppressMessages()
-        if (!rlang::is_null(error_cla)) {
-          error_cla <- df %>%
-            dplyr::filter(id.rank == "class" &
-                            .data$class %in% error_cla$supplied_name) %>%
-            dplyr::select("names", "id.rank") %>%
-            dplyr::bind_cols(error_cla)
-        }
-      }
-    }
+    ) %>%
+      dplyr::bind_rows()
 
-    error <- dplyr::bind_rows(error_spe, error_gen, error_fam, error_ord, error_cla)
     if (nrow(error) > 0) {
       f <- function() {
         cli::cli_alert_danger("{.val {nrow(error)}} {?name/names} {?is/are}
@@ -274,7 +227,7 @@ build_fish_taxonomy <- function(names,
 
       # Remove errors
       df <- df %>%
-        dplyr::filter(!names %in% error$names)
+        dplyr::filter(!.data$original_name %in% error$original_name)
     }
   }
 
@@ -310,6 +263,6 @@ build_fish_taxonomy <- function(names,
 
   # Out
   df %>%
-    dplyr::select("names", "id.rank", "species", "genus", "family", "order", "class") %>%
-    dplyr::rename({{colname}} := "names")
+    dplyr::select("original_name", "id.rank", "species", "genus", "family", "order", "class") %>%
+    dplyr::rename({{colname}} := "original_name")
 }

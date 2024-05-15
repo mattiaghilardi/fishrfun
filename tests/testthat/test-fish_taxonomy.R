@@ -22,5 +22,11 @@ test_that("We can build fish taxonomy", {
 
   df <- build_fish_taxonomy(species)
   expect_s3_class(df, "data.frame")
-  expect_equal(ncol(df), 7)
+  expect_equal(colnames(df), c("original_name",
+                               "id.rank",
+                               "species",
+                               "genus",
+                               "family",
+                               "order",
+                               "class"))
 })

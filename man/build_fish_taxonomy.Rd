@@ -8,7 +8,7 @@ build_fish_taxonomy(
   names,
   id.rank = NULL,
   check_names = TRUE,
-  colname = "names",
+  colname = "original_name",
   db = c("FB", "ECoF"),
   version = "latest"
 )
