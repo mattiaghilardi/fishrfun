@@ -26,9 +26,9 @@ A data frame with the provided name(s) and maximum length(s).
 }
 \description{
 \code{max_length_FB} extracts the observed or estimated species maximum length
-(total, standard, or both). It also works with taxa identified at the
-genus or family level. In this case it returns the maximum length among
-all the species belonging to the genus or family.
+(total, standard, or both). It also works with taxa identified at different
+taxonomic ranks. In this case it returns the maximum length among
+all the species belonging to the rank.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

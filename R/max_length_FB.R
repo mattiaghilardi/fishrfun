@@ -2,9 +2,9 @@
 #'
 #' @description
 #' `max_length_FB` extracts the observed or estimated species maximum length
-#' (total, standard, or both). It also works with taxa identified at the
-#' genus or family level. In this case it returns the maximum length among
-#' all the species belonging to the genus or family.
+#' (total, standard, or both). It also works with taxa identified at different
+#' taxonomic ranks. In this case it returns the maximum length among
+#' all the species belonging to the rank.
 #'
 #' @inheritParams morphometric_traits_FB
 #' @param length_type A string; the type of length to return.
@@ -14,7 +14,7 @@
 #' @return A data frame with the provided name(s) and maximum length(s).
 #'
 #' @importFrom rfishbase estimate
-#' @importFrom dplyr summarise across
+#' @importFrom dplyr summarise across where all_of
 #'
 #' @inherit load_fish_taxonomy author
 #'
@@ -51,46 +51,29 @@ max_length_FB <- function(names,
                        dplyr::select("Species", "MaxLengthTL", "MaxLengthSL"),
                      by = c("species" = "Species"))
 
-  # Max length at genus level
-  if ("genus" %in% names$id.rank) {
+  # Max length at higher ranks
+  for (i in c("Genus", "Family", "Order", "Class")) {
+    i_low <- tolower(i)
+    if (i_low %in% names$id.rank) {
 
-    # Keep max value for each genus
-    maxL_gen <- maxL_spe %>%
-      dplyr::group_by(Genus) %>%
-      dplyr::summarise(maxTL_g = base::max(MaxLengthTL, na.rm = TRUE),
-                       maxSL_g = base::max(MaxLengthSL, na.rm = TRUE))
+      # Keep max value for each genus
+      maxL_i <- maxL_spe %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(i))) %>%
+        dplyr::summarise(maxTL_i = base::max(MaxLengthTL, na.rm = TRUE),
+                         maxSL_i = base::max(MaxLengthSL, na.rm = TRUE)) %>%
+        dplyr::rename("{i_low}" := dplyr::all_of(i))
 
-    # Join
-    maxL <- maxL %>%
-      dplyr::left_join(maxL_gen,
-                       by = c("genus" = "Genus")) %>%
-      dplyr::mutate(MaxLengthTL = ifelse(.data$id.rank == "genus",
-                                         .data$maxTL_g,
-                                         MaxLengthTL),
-                    MaxLengthSL = ifelse(.data$id.rank == "genus",
-                                         .data$maxSL_g,
-                                         MaxLengthSL))
-  }
-
-  # Max length at family level
-  if ("family" %in% names$id.rank) {
-
-    # Keep max value for each family
-    maxL_fam <- maxL_spe %>%
-      dplyr::group_by(Family) %>%
-      dplyr::summarise(maxTL_f = base::max(MaxLengthTL, na.rm = TRUE),
-                       maxSL_f = base::max(MaxLengthSL, na.rm = TRUE))
-
-    # Join
-    maxL <- maxL %>%
-      dplyr::left_join(maxL_fam,
-                       by = c("family" = "Family")) %>%
-      dplyr::mutate(MaxLengthTL = ifelse(.data$id.rank == "family",
-                                         .data$maxTL_f,
-                                         MaxLengthTL),
-                    MaxLengthSL = ifelse(.data$id.rank == "family",
-                                         .data$maxSL_f,
-                                         MaxLengthSL))
+      # Join
+      maxL <- maxL %>%
+        dplyr::left_join(maxL_i, by = i_low) %>%
+        dplyr::mutate(MaxLengthTL = ifelse(.data$id.rank == i_low,
+                                           .data$maxTL_i,
+                                           MaxLengthTL),
+                      MaxLengthSL = ifelse(.data$id.rank == i_low,
+                                           .data$maxSL_i,
+                                           MaxLengthSL)) %>%
+        dplyr::select(-c("maxTL_i", "maxSL_i"))
+    }
   }
 
   # Out
@@ -98,7 +81,7 @@ max_length_FB <- function(names,
   maxL %>%
     dplyr::select(1, paste0("MaxLength", length_type)) %>%
     # Round max length
-    dplyr::mutate(dplyr::across(is.double,
+    dplyr::mutate(dplyr::across(dplyr::where(is.double),
                                 ~ round(.x, 2)))
 
 }
