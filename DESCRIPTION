@@ -13,19 +13,20 @@ BugReports: https://github.com/mattiaghilardi/fishrfun/issues
 Depends: 
     R (>= 4.0)
 Imports: 
-    cli,
+    cli (>= 3.0.0),
     curl,
-    dplyr,
+    dplyr (>= 1.1.0),
     fishtree,
     magrittr (>= 1.5),
     memoise,
+    purrr,
     RCurl,
     rfishbase (>= 3.1.9),
     rlang,
     stringdist,
     stringi,
     taxadb (>= 0.2.1),
-    tidyr
+    tidyr (>= 1.0.0)
 Suggests:
     spelling, 
     testthat (>= 3.0.0)

@@ -32,10 +32,14 @@ all the species belonging to the rank.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# List of taxa identified to species, genus or family level
+species <- c("Dentex dentex", "Labrus sp.", "Scombridae spp.")
+ranks <- c("species", "genus", "family")
+taxa <- build_fish_taxonomy(species, ranks)
 # Max total length of fishes identified to species, genus or family level
-max_length_FB(c("Dentex dentex", "Scombridae spp.", "Diplodus sargus", "Labrus sp."))
+max_length_FB(taxa)
 # Both max TL and SL
-max_length_FB(c("Pagellus acarne", "Mullus spp."), length_type = "both")
+max_length_FB(taxa, length_type = "both")
 \dontshow{\}) # examplesIf}
 }
 \author{

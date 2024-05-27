@@ -2,7 +2,7 @@ test_that("We can retrieve fish morphometry", {
 
   skip_if_offline()
   species <- c("Dentex dentex", "Mullus sp.", "Balistidae spp.")
-  ranks = c("species", "genus", "family")
+  ranks <- c("species", "genus", "family")
   df <- build_fish_taxonomy(species, ranks)
   ar <- aspect_ratio_FB(df)
   expect_s3_class(ar, "data.frame")
