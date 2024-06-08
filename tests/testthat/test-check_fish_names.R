@@ -13,7 +13,8 @@ test_that("Name checking works with all databases", {
   skip_if_offline()
 
   expect_message(errors <- check_fish_names(c("Boops boops", "Sparus aurata"),
-                                            db = "FB"))
+                                            db = "FB"),
+                 "All Species names are correct")
   expect_null(errors)
 
   errors <- check_fish_names(c("Scarus ghobban", "Ostracion cubicus"),
@@ -25,11 +26,18 @@ test_that("Name checking works with all databases", {
   expect_s3_class(errors, "data.frame")
   expect_equal(ncol(errors), 2)
 
+  expect_message(check_fish_names_FTOL("Acanthurus chirurgus",
+                                       rank = "Species", sampled = TRUE),
+                 "All species names are correct")
+  expect_message(check_fish_names_FTOL("Acanthurus chirurgus",
+                                       rank = "Species", sampled = TRUE),
+                 "All species have genetic data")
   errors <- check_fish_names_FTOL(c("Caesio cuning", "Acanthurus chirurgus"),
                                   rank = "Species", sampled = TRUE)
   expect_type(errors, "list")
   expect_equal(length(errors), 2)
 
-  expect_message(check_fish_names_FTOL("Sparus", rank = "Genus"))
+  expect_message(check_fish_names_FTOL("Sparus", rank = "Genus"),
+                 "All genus names are correct")
 
 })

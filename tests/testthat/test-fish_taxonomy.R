@@ -33,4 +33,9 @@ test_that("We can build fish taxonomy", {
   # test that throws error if rank names are wrong
   expect_error(build_fish_taxonomy(species,
                                    c("s", "g", "f")))
+  # test that throws message if one or more names are wrong
+  expect_message(df <- build_fish_taxonomy(c("Dentex dente", "Mullus sp.", "Balistidae spp.")),
+                 "Building taxonomy only for valid names")
+  # and wrong names are removed
+  expect_equal(nrow(df), 2)
 })
