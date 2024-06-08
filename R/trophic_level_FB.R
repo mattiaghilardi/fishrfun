@@ -183,7 +183,7 @@ trophic_level_FB <- function(names,
                                           ordered = TRUE),
                       name = gsub("\\..*", "", .data$name)) %>%
         dplyr::filter(!is.na(.data$value)) %>%
-        tidyr::pivot_wider(names_from = .data$name, values_from = .data$value) %>%
+        tidyr::pivot_wider(names_from = "name", values_from = "value") %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(names(ranks)[x]))) %>%
         dplyr::filter(.data$troph_rank == min(.data$troph_rank)) %>%
         dplyr::rowwise() %>%
@@ -202,12 +202,13 @@ trophic_level_FB <- function(names,
 
   # Out
   names %>%
-    dplyr::mutate(submitted_name = dplyr::case_when(
-      .data$id.rank == "species" ~ species,
-      .data$id.rank == "genus" ~ genus,
-      .data$id.rank == "family" ~ family,
-      .data$id.rank == "order" ~ order,
-      .data$id.rank == "class" ~ class)) %>%
+    dplyr::mutate(
+      submitted_name = dplyr::case_when(
+        .data$id.rank == "species" ~ species,
+        .data$id.rank == "genus" ~ genus,
+        .data$id.rank == "family" ~ family,
+        .data$id.rank == "order" ~ order,
+        .data$id.rank == "class" ~ class)) %>%
     dplyr::left_join(troph, by = "submitted_name") %>%
     dplyr::select(-c(2:8))
   # %>%

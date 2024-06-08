@@ -29,4 +29,8 @@ test_that("We can build fish taxonomy", {
                                "family",
                                "order",
                                "class"))
+
+  # test that throws error if rank names are wrong
+  expect_error(build_fish_taxonomy(species,
+                                   c("s", "g", "f")))
 })

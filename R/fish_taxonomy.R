@@ -131,7 +131,7 @@ build_fish_taxonomy <- function(names,
 
     id.values <- c("species", "genus", "family", "order", "class")
     if (!all(unique(id.rank) %in% id.values)) {
-      cli::cli_abort("{.arg {rlang::caller_arg(id.rank)}} can only include
+      cli::cli_abort("{.arg id.rank} can only include
                      the following values: {.val {id.values}}",
                      call = rlang::caller_env())
     }

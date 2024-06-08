@@ -185,7 +185,6 @@ check_fish_names_FTOL <- function(names,
   check_character(names)
   rank <- rlang::arg_match(rank,
                            c("Species", "Genus", "Family", "Order", "Class"))
-  if (rank == "species") check_logical(sampled)
 
   # Rank lower case in FTOL
   rank <- tolower(rank)
@@ -194,6 +193,7 @@ check_fish_names_FTOL <- function(names,
   taxo_ftol <- fishtree::fishtree_taxonomy()
 
   if (rank == "species") {
+    check_logical(sampled)
     # Retrieve all species
     sp_ftol <- fishtree::fishtree_taxonomy(taxo_ftol[taxo_ftol$rank == "class", "name"])[[1]]
     unique_taxa <- unique(sp_ftol$species)
