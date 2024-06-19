@@ -13,11 +13,11 @@ validate_names_ECoF(
 \arguments{
 \item{species_list}{A string or character vector of species names}
 
-\item{USE.NAMES}{Logical; if TRUE use \code{species_list} as names for
-the returned object}
+\item{USE.NAMES}{Logical; if TRUE use \code{species_list} as names for the
+returned object}
 
-\item{version}{A string; the database version to use. Will default
-to the latest available; see \code{\link[=available_ECoF_releases]{available_ECoF_releases()}}}
+\item{version}{A string; the database version to use. Will default to
+the latest available; see \code{\link[=available_ECoF_releases]{available_ECoF_releases()}}}
 }
 \value{
 A vector of validated names, or a list if multiple

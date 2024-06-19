@@ -15,8 +15,7 @@ check_fish_names(
 \item{names}{A string or character vector of names}
 
 \item{rank}{A string; the taxonomic rank at which names should be checked.
-Must be one of "Species" (default), "Genus", "Family",
-"Order", or "Class"}
+Must be one of "Species" (default), "Genus", "Family", "Order", or "Class"}
 
 \item{db}{Either "FB" (FishBase; default) or "ECoF" (Eschmeyer's Catalog of Fishes)}
 

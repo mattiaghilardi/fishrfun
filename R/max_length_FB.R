@@ -60,7 +60,7 @@ max_length_FB <- function(names,
     i_low <- tolower(i)
     if (i_low %in% names$id.rank) {
 
-      # Keep max value for each genus
+      # Keep max value for each taxonomic group
       maxL_i <- maxL_spe %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(i))) %>%
         dplyr::summarise(maxTL_i = base::max(MaxLengthTL, na.rm = TRUE),

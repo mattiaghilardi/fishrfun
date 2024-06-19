@@ -2,8 +2,7 @@
 #'
 #' @param names A string or character vector of names
 #' @param rank A string; the taxonomic rank at which names should be checked.
-#'             Must be one of "Species" (default), "Genus", "Family",
-#'             "Order", or "Class"
+#' Must be one of "Species" (default), "Genus", "Family", "Order", or "Class"
 #' @inheritParams load_fish_taxonomy
 #'
 #' @importFrom cli cli_inform cli_alert_danger cli_alert_info
@@ -101,10 +100,10 @@ validate_fish_names <- function(species_list,
 #' Validate species names in the Eschmeyer's Catalog of Fishes
 #'
 #' @param species_list A string or character vector of species names
-#' @param USE.NAMES Logical; if TRUE use `species_list` as names for
-#'                  the returned object
-#' @param version A string; the database version to use. Will default
-#'                to the latest available; see [available_ECoF_releases()]
+#' @param USE.NAMES Logical; if TRUE use `species_list` as names for the
+#' returned object
+#' @param version A string; the database version to use. Will default to
+#' the latest available; see [available_ECoF_releases()]
 #'
 #' @return A vector of validated names, or a list if multiple
 #' valid species match a single name
@@ -146,10 +145,10 @@ validate_names_ECoF <- function(species_list,
 #' Check scientific names and sampled species in the Fish Tree of Life
 #'
 #' @inheritParams check_fish_names
-#' @param sampled Logical, only if `rank = "Species"`.
-#'                If names have to be checked for unsampled species
-#'                (i.e. those without genetic data,
-#'                see Rabosky et al. 2018 for detailed methodology)
+#' @param sampled Logical, only if `rank = "Species"`. If names have to be
+#' checked for unsampled species (i.e. those without genetic data, see
+#' [Rabosky et al. 2018](https://doi.org/10.1038/s41586-018-0273-1)
+#' for detailed methodology)
 #'
 #' @return
 #' A message. If any non-valid name is found, a data frame is also returned
@@ -176,7 +175,7 @@ validate_names_ECoF <- function(species_list,
 #'
 #' @references
 #' Rabosky D. L. et al. (2018) An inverse latitudinal gradient in
-#' speciation rate for marine fishes. Nature, 559, 392–395.
+#' speciation rate for marine fishes. Nature, 559, 392-395.
 #' <https://doi.org/10.1038/s41586-018-0273-1>
 check_fish_names_FTOL <- function(names,
                                   rank = "Species",

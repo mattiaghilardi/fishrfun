@@ -134,9 +134,9 @@ trophic_level_FB <- function(names,
                            troph_se = sqrt(sum(troph_se.s^2, na.rm = TRUE) / troph_n),
                            # If instead we want to calculate SE from species estimates
                            # troph_se = sd(troph_mean.s) / sqrt(troph_n),
-                           troph_remark = paste("Average trophic level based on data from",
-                                                 troph_n,
-                                                 "species.")) %>%
+                           troph_remark = paste0("Average trophic level based on data from ",
+                                                 troph_n, " species within this ",
+                                                 tolower(.x), ".")) %>%
           dplyr::select(-troph_n) %>%
           rlang::set_names(.x,
                            paste(c("troph_mean", "troph_se", "troph_remark"),

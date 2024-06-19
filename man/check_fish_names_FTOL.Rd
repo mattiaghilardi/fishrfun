@@ -10,13 +10,12 @@ check_fish_names_FTOL(names, rank = "Species", sampled = FALSE)
 \item{names}{A string or character vector of names}
 
 \item{rank}{A string; the taxonomic rank at which names should be checked.
-Must be one of "Species" (default), "Genus", "Family",
-"Order", or "Class"}
+Must be one of "Species" (default), "Genus", "Family", "Order", or "Class"}
 
-\item{sampled}{Logical, only if \code{rank = "Species"}.
-If names have to be checked for unsampled species
-(i.e. those without genetic data,
-see Rabosky et al. 2018 for detailed methodology)}
+\item{sampled}{Logical, only if \code{rank = "Species"}. If names have to be
+checked for unsampled species (i.e. those without genetic data, see
+\href{https://doi.org/10.1038/s41586-018-0273-1}{Rabosky et al. 2018}
+for detailed methodology)}
 }
 \value{
 A message. If any non-valid name is found, a data frame is also returned
@@ -44,7 +43,7 @@ errors
 }
 \references{
 Rabosky D. L. et al. (2018) An inverse latitudinal gradient in
-speciation rate for marine fishes. Nature, 559, 392–395.
+speciation rate for marine fishes. Nature, 559, 392-395.
 \url{https://doi.org/10.1038/s41586-018-0273-1}
 }
 \author{
