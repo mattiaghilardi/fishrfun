@@ -26,6 +26,7 @@ Imports:
     stringdist,
     stringi,
     taxadb (>= 0.2.1),
+    tibble,
     tidyr (>= 1.0.0)
 Suggests:
     spelling, 
