@@ -1,8 +1,8 @@
 #' Get morphometric traits from FishBase
 #'
 #' @description
-#' `morphometric_traits_FB` extracts average morphometric traits at
-#' the lowest available taxonomic rank, either species, genus, or family.
+#' `morphometric_traits_FB` is a general function to extract average
+#' morphometric traits at the lowest available taxonomic rank.
 #' It works with taxa identified at different taxonomic ranks.
 #' Some trait-specific functions are also provided:
 #' - `aspect_ratio_FB`: returns the aspect ratio of caudal fin
@@ -16,13 +16,13 @@
 #' "`aspect_ratio = AspectRatio`", where `aspect_ratio` is the trait name
 #' that you will find in the output and `AspectRatio` is the variable
 #' name in the FishBase morphometric table. This is exactly what
-#' `aspect_ratio_FB` does.
+#' `aspect_ratio_FB()` does.
 #'
 #' If you want a composite trait, use the expression "`user_trait_name = formula`",
 #' where the formula must only use variable names present in the FishBase
 #' morphometric table. For instance, if you want the eye diameter standardised
 #' by head length (as presented in FishBase), use "`eye_diameter = ED/HL`",
-#' where `ED` and `HL` are the variable names for eye diameter and head length
+#' where `ED` and `HL` are the variable names for eye diameter and head length,
 #' respectively.
 #'
 #' Multiple expressions can be used to extract multiple traits simultaneously.
@@ -34,23 +34,33 @@
 #' character vector of taxonomic names to be passed on to [build_fish_taxonomy()]
 #' @param ... Expressions in the form of `user_trait_name = variable_name`, or
 #' `user_trait_name = formula`. See *Details*
+#' @param return_pics Logical; if the names of pictures used to extract traits
+#' should be returned. This might be useful if you find some issues with the
+#' returned trait values and would like to check the pictures, otherwise it
+#' slows down execution. Default to FALSE
 #' @param FB_version A string; the FishBase version to use.
 #' Will default to the latest available; see [rfishbase::available_releases()]
 #'
-#' @return A data frame with the provided name(s), and two columns for
-#' each trait, the first with the trait values and the second with the
-#' taxonomic rank at which the values are extracted.
+#' @return A data frame with the provided name(s), and four columns for each
+#' trait, or five if `return_pics = TRUE`. The first column reports the
+#' average trait values, while the other columns include the standard
+#' deviation ("sd"), the number of individuals or species (for taxa identified
+#' at the species level or at higher taxonomic ranks, respectively)
+#' with data ("n"), the taxonomic rank at which the values are extracted
+#' ("rank"), and, if `return_pics = TRUE`, the picture names ("pics") as a list.
 #'
 #' @importFrom rfishbase morphometrics
-#' @importFrom rlang quos
-#' @importFrom dplyr group_by ungroup ends_with
-#' @importFrom rlang `!!!`
+#' @importFrom rlang quos `!!!`
+#' @importFrom dplyr group_by ungroup rowwise
+#' @importFrom stats sd
 #'
 #' @inherit load_fish_taxonomy author
 #'
 #' @examplesIf interactive()
 #' # List of taxa identified to species, genus or family level
-#' taxa <- c("Caesio cuning", "Acanthurus sp.", "Chaetodontidae spp.")
+#' species <- c("Caesio cuning", "Acanthurus sp.", "Chaetodontidae spp.")
+#' ranks <- c("species", "genus", "family")
+#' taxa <- build_fish_taxonomy(species, ranks)
 #' # Aspect ratio
 #' aspect_ratio_FB(taxa)
 #' # User-specified traits, e.g. eye diameter standardised by head length (ED/HL)
@@ -60,6 +70,7 @@
 #' @export
 morphometric_traits_FB <- function(names,
                                    ...,
+                                   return_pics = FALSE,
                                    FB_version = latest_release("FB")) {
 
   # Checks
@@ -68,150 +79,191 @@ morphometric_traits_FB <- function(names,
   names <- check_names_arg(names, version = version)
 
   # Load taxonomy
-  taxo <- load_fish_taxonomy("FB", version = version)
+  taxo <- load_fish_taxonomy("FB", version = version) %>%
+    dplyr::filter(Genus != "Leptocephalus") # current issue in FB taxonomy
 
   # Morphometry table
-  morph <- rfishbase::morphometrics(version = version)
-  morph$SL <- as.numeric(morph$SL) # for version 3.1.9
-  morph <- dplyr::left_join(taxo, morph) %>%
-    suppressMessages()
+  morph <- rfishbase::morphometrics(version = version) %>%
+    dplyr::mutate(SL = as.numeric(SL)) # for version 3.1.9
 
   # Add trait(s)
   args <- rlang::quos(...)
   trait_names <- names(args)
   n_traits <- length(args)
 
-  out <- names
+  if (n_traits == 0) cli::cli_abort("No traits requested")
 
-  for (i in 1:n_traits) {
-    morph2 <- morph %>%
-      dplyr::mutate(!!! args[i]) %>%
-      dplyr::rename("trait" = trait_names[i])
+  out <- purrr::map(
+    1:n_traits,
+    function(i) {
 
-    # Get trait at the species, genus or family level for each species
-    morph2 <- morph2 %>%
-      dplyr::group_by(Species) %>%
-      dplyr::mutate(trait_s = mean(trait, na.rm = TRUE)) %>%
-      dplyr::ungroup() %>%
-      dplyr::select("Species", "Genus", "Family", "trait_s") %>%
-      dplyr::distinct() %>% # keep only 1 value per species
-      dplyr::group_by(Genus) %>%
-      dplyr::mutate(trait_g = mean(trait_s, na.rm = TRUE)) %>%
-      dplyr::ungroup() %>%
-      dplyr::group_by(Family) %>%
-      dplyr::mutate(trait_f = mean(trait_s, na.rm = TRUE)) %>%
-      dplyr::ungroup()
+      morph2 <- morph %>%
+        dplyr::mutate(!!! args[i]) %>%
+        dplyr::rename("trait" = trait_names[i])
 
-    # Species
-    trait_spe <- morph2 %>%
-      dplyr::select("Species", "trait_s", "trait_g", "trait_f") %>%
-      dplyr::distinct() %>%
-      # Retain the trait at the lowest possible taxonomic rank and add rank
-      dplyr::mutate(
-        trait_value = dplyr::case_when(
-          !is.na(trait_s) ~ trait_s,
-          is.na(trait_s) & !is.na(trait_g) ~ trait_g,
-          is.na(trait_s) & is.na(trait_g) & !is.na(trait_f) ~ trait_f,
-          is.na(trait_s) & is.na(trait_g) & is.na(trait_f) ~ NA
-        ),
-        trait_rank = dplyr::case_when(
-          !is.na(trait_s) ~ "species",
-          is.na(trait_s) & !is.na(trait_g) ~ "genus",
-          is.na(trait_s) & is.na(trait_g) & !is.na(trait_f) ~ "family",
-          is.na(trait_s) & is.na(trait_g) & is.na(trait_f) ~ NA
-        )
+      # Get average trait for each species
+      morph2 <- taxo %>%
+        dplyr::left_join(
+          morph2 %>%
+            dplyr::filter(!is.na(.data$trait)) %>% # need to remove NAs to get correct n
+            dplyr::group_by(SpecCode) %>%
+            dplyr::summarise(trait_mean.s = mean(.data$trait, na.rm = TRUE),
+                             trait_sd.s = stats::sd(.data$trait, na.rm = TRUE),
+                             trait_n.s = dplyr::n(),
+                             trait_pics.s = ifelse(return_pics, list(PicName), NA)),
+          by = "SpecCode")
+
+      # Get average trait for all higher ranks
+      morph2 <- purrr::map2(
+        c("Genus", "Family", "Order", "Class"),
+        c("g", "f", "o", "c"),
+        ~ morph2 %>%
+          dplyr::left_join(
+            morph2 %>%
+              dplyr::filter(!is.na(.data$trait_mean.s)) %>% # need to remove NAs to get correct n
+              dplyr::select(dplyr::all_of(c(.x, "Species", "trait_mean.s", "trait_pics.s"))) %>%
+              dplyr::group_by(dplyr::across(dplyr::all_of(.x))) %>%
+              dplyr::summarise(trait_mean = mean(.data$trait_mean.s, na.rm = TRUE),
+                               trait_sd = stats::sd(.data$trait_mean.s, na.rm = TRUE),
+                               trait_n = dplyr::n(),
+                               trait_pics = ifelse(return_pics, list(.data$trait_pics.s), NA)) %>%
+              rlang::set_names(.x,
+                               paste(c("trait_mean", "trait_sd", "trait_n", "trait_pics"),
+                                     .y,
+                                     sep = '.')),
+            by = .x)
       ) %>%
-      dplyr::select("Species", "trait_value", "trait_rank")
+        purrr::reduce(dplyr::left_join) %>%
+        suppressMessages()
 
-    # Join
-    out <- out %>%
-      dplyr::left_join(trait_spe,
-                       by = c("species" = "Species"))
+      ranks <- list("Species" = c("s", "g", "f", "o", "c"),
+                    "Genus" = c("g", "f", "o", "c"),
+                    "Family" = c("f", "o", "c"),
+                    "Order" = c("o", "c"),
+                    "Class" = "c")
 
-    # Genus
-    if ("genus" %in% out$id.rank) {
+      ranks <- ranks[unique(stringi::stri_trans_totitle(names$id.rank))]
 
-      trait_gen <- morph2 %>%
-        dplyr::select("Genus", "trait_g", "trait_f") %>%
-        dplyr::distinct() %>%
-        # Retain the trait at the lowest possible taxonomic rank and add rank
-        dplyr::mutate(
-          trait_value = ifelse(!is.na(trait_g), trait_g, trait_f),
-          trait_rank = dplyr::case_when(!is.na(trait_g) ~ "genus",
-                                        is.na(trait_g) & !is.na(trait_f) ~ "family",
-                                        is.na(trait_g) & is.na(trait_f) ~ NA)
-          ) %>%
-        dplyr::select("Genus", "trait_value", "trait_rank")
+      morph2 <- purrr::map(
+        1:length(ranks),
+        function(x) {
+          trait_summary <- morph2 %>%
+            dplyr::select(dplyr::all_of(
+              c(names(ranks)[x],
+                paste0("trait_",
+                       rep(c("mean", "sd", "n"), each = length(ranks[[x]])),
+                       ".",
+                       ranks[[x]]))
+            )) %>%
+            # retain only requested taxa to speed up
+            dplyr::filter(
+              .data[[names(ranks)[x]]] %in% (names %>%
+                                               dplyr::filter(.data$id.rank == tolower(names(ranks)[x])) %>%
+                                               dplyr::pull(tolower(names(ranks)[x])))
+            ) %>%
+            unique() %>%
+            tidyr::pivot_longer(cols = dplyr::starts_with("trait_"),
+                                names_to = "name",
+                                values_to = "value") %>%
+            dplyr::mutate(trait_rank = gsub(".*\\.", "", .data$name),
+                          trait_rank = factor(.data$trait_rank,
+                                              levels = c("s", "g", "f", "o", "c"),
+                                              labels = c("species", "genus", "family", "order", "class"),
+                                              ordered = TRUE),
+                          name = gsub("\\..*", "", .data$name)) %>%
+            dplyr::filter(!is.na(.data$value)) %>%
+            tidyr::pivot_wider(names_from = "name", values_from = "value") %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(names(ranks)[x]))) %>%
+            dplyr::filter(.data$trait_rank == min(.data$trait_rank)) %>%
+            dplyr::ungroup() %>%
+            dplyr::mutate(trait_rank = as.character(.data$trait_rank))
 
-      # Join
-      out <- out %>%
-        dplyr::left_join(trait_gen,
-                         by = c("genus" = "Genus"),
-                         suffix = c("", ".g")) %>%
-        dplyr::mutate(
-          trait_value = ifelse(is.na(trait_value),
-                               trait_value.g,
-                               trait_value),
-          trait_rank = ifelse(is.na(trait_rank),
-                              trait_rank.g,
-                              trait_rank))
-    }
+          if (return_pics) {
+            trait_summary <- trait_summary %>%
+              dplyr::left_join(
+                morph2 %>%
+                  dplyr::select(dplyr::all_of(
+                    c(names(ranks)[x],
+                      paste0("trait_",
+                             rep(c("pics"), each = length(ranks[[x]])),
+                             ".",
+                             ranks[[x]]))
+                  )) %>%
+                  dplyr::filter(
+                    .data[[names(ranks)[x]]] %in% (names %>%
+                                                     dplyr::filter(.data$id.rank == tolower(names(ranks)[x])) %>%
+                                                     dplyr::pull(tolower(names(ranks)[x])))
+                  ) %>%
+                  unique(),
+                by = c(names(ranks)[x])
+              ) %>%
+              dplyr::rowwise() %>%
+              dplyr::mutate(
+                trait_pics = ifelse(!is.na(.data$trait_rank),
+                                    list(get(paste0("trait_pics.",
+                                                    stringi::stri_sub(.data$trait_rank, 0, 1)))),
+                                    NA)
+              ) %>%
+              dplyr::ungroup()
+          }
 
-    # Family
-    if ("family" %in% out$id.rank) {
+          if (return_pics) {
+            trait_summary %>%
+              dplyr::select("submitted_name" = 1, "trait_mean", "trait_sd", "trait_n", "trait_rank", "trait_pics")
+          } else {
+            trait_summary %>%
+              dplyr::select("submitted_name" = 1, "trait_mean", "trait_sd", "trait_n", "trait_rank")
+          }
+        }) %>%
+        dplyr::bind_rows()
 
-      trait_fam <- morph2 %>%
-        dplyr::select("Family", "trait_value" = "trait_f") %>%
-        dplyr::distinct() %>%
-        dplyr::mutate(trait_rank = ifelse(is.na(trait_value), NA, "family"))
+      morph2 %>%
+        dplyr::rename("{trait_names[i]}" := "trait_mean") %>%
+        dplyr::rename_with(~ gsub("trait_", paste0(trait_names[i], "."), .x, fixed = TRUE))
+    }) %>%
+    purrr::reduce(dplyr::left_join, by = "submitted_name")
 
-      # Join
-      out <- out %>%
-        dplyr::left_join(trait_fam,
-                         by = c("family" = "Family"),
-                         suffix = c("", ".f")) %>%
-        dplyr::mutate(
-          trait_value = ifelse(is.na(trait_value),
-                               trait_value.f,
-                               trait_value),
-          trait_rank = ifelse(is.na(trait_rank),
-                              trait_rank.f,
-                              trait_rank))
-    }
-
-    out <- out %>%
-      dplyr::select(-c(dplyr::ends_with(c(".s", ".g", ".f")))) %>%
-      dplyr::mutate(trait_value = round(trait_value, 2)) %>%
-      dplyr::rename("{trait_names[i]}" := "trait_value",
-                    "{paste0(trait_names[i], '.rank')}" := "trait_rank")
-  }
-
-  out %>% dplyr::select(-c(2:7))
+  names %>%
+    dplyr::mutate(
+      submitted_name = dplyr::case_when(
+        .data$id.rank == "species" ~ species,
+        .data$id.rank == "genus" ~ genus,
+        .data$id.rank == "family" ~ family,
+        .data$id.rank == "order" ~ order,
+        .data$id.rank == "class" ~ class)) %>%
+    dplyr::left_join(out, by = "submitted_name") %>%
+    dplyr::select(-c(2:8))
 }
 
 #' @rdname morphometric_traits_FB
 #' @export
 aspect_ratio_FB <- function(names,
+                            return_pics = FALSE,
                             FB_version = latest_release("FB")) {
   morphometric_traits_FB(names,
                          aspect_ratio = AspectRatio,
+                         return_pics = return_pics,
                          FB_version = FB_version)
 }
 
 #' @rdname morphometric_traits_FB
 #' @export
 elongation_FB <- function(names,
+                          return_pics = FALSE,
                           FB_version = latest_release("FB")) {
   morphometric_traits_FB(names,
                          elongation = SL/BD,
+                         return_pics = return_pics,
                          FB_version = FB_version)
 }
 
 #' @rdname morphometric_traits_FB
 #' @export
 body_depth_FB <- function(names,
+                          return_pics = FALSE,
                           FB_version = latest_release("FB")) {
   morphometric_traits_FB(names,
                          body_depth = BD/SL,
+                         return_pics = return_pics,
                          FB_version = FB_version)
 }

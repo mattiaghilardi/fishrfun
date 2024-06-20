@@ -2,7 +2,7 @@
 #'
 #' @description
 #' `trophic_level_FB` extracts the average trophic level at the lowest
-#' available taxonomic rank. It also works with taxa identified at different
+#' available taxonomic rank. It works with taxa identified at different
 #' taxonomic ranks.
 #'
 #' @details
@@ -41,7 +41,7 @@
 #' average values at higher ranks).
 #'
 #' @importFrom rfishbase ecology
-#' @importFrom dplyr slice pick starts_with rename_with
+#' @importFrom dplyr slice pick starts_with rename_with n
 #' @importFrom purrr map map2 reduce
 #' @importFrom tidyr pivot_wider pivot_longer
 #' @importFrom rlang set_names

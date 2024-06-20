@@ -30,7 +30,7 @@ average values at higher ranks).
 }
 \description{
 \code{trophic_level_FB} extracts the average trophic level at the lowest
-available taxonomic rank. It also works with taxa identified at different
+available taxonomic rank. It works with taxa identified at different
 taxonomic ranks.
 }
 \details{

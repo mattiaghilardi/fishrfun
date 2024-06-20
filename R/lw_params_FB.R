@@ -13,6 +13,8 @@
 #' method can be found in the [paper](https://doi.org/10.1111/jai.12299) and
 #' [here](https://fishbase.se/fishonline/english/fol_fishbasegoesfishbayes.htm).
 #'
+#' @importFrom dplyr ends_with
+#'
 #' @inherit load_fish_taxonomy author
 #'
 #' @references

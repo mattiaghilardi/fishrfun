@@ -7,13 +7,18 @@
 \alias{body_depth_FB}
 \title{Get morphometric traits from FishBase}
 \usage{
-morphometric_traits_FB(names, ..., FB_version = latest_release("FB"))
+morphometric_traits_FB(
+  names,
+  ...,
+  return_pics = FALSE,
+  FB_version = latest_release("FB")
+)
 
-aspect_ratio_FB(names, FB_version = latest_release("FB"))
+aspect_ratio_FB(names, return_pics = FALSE, FB_version = latest_release("FB"))
 
-elongation_FB(names, FB_version = latest_release("FB"))
+elongation_FB(names, return_pics = FALSE, FB_version = latest_release("FB"))
 
-body_depth_FB(names, FB_version = latest_release("FB"))
+body_depth_FB(names, return_pics = FALSE, FB_version = latest_release("FB"))
 }
 \arguments{
 \item{names}{A data frame created by \code{\link[=build_fish_taxonomy]{build_fish_taxonomy()}} or a
@@ -22,17 +27,26 @@ character vector of taxonomic names to be passed on to \code{\link[=build_fish_t
 \item{...}{Expressions in the form of \code{user_trait_name = variable_name}, or
 \code{user_trait_name = formula}. See \emph{Details}}
 
+\item{return_pics}{Logical; if the names of pictures used to extract traits
+should be returned. This might be useful if you find some issues with the
+returned trait values and would like to check the pictures, otherwise it
+slows down execution. Default to FALSE}
+
 \item{FB_version}{A string; the FishBase version to use.
 Will default to the latest available; see \code{\link[rfishbase:available_releases]{rfishbase::available_releases()}}}
 }
 \value{
-A data frame with the provided name(s), and two columns for
-each trait, the first with the trait values and the second with the
-taxonomic rank at which the values are extracted.
+A data frame with the provided name(s), and four columns for each
+trait, or five if \code{return_pics = TRUE}. The first column reports the
+average trait values, while the other columns include the standard
+deviation ("sd"), the number of individuals or species (for taxa identified
+at the species level or at higher taxonomic ranks, respectively)
+with data ("n"), the taxonomic rank at which the values are extracted
+("rank"), and, if \code{return_pics = TRUE}, the picture names ("pics") as a list.
 }
 \description{
-\code{morphometric_traits_FB} extracts average morphometric traits at
-the lowest available taxonomic rank, either species, genus, or family.
+\code{morphometric_traits_FB} is a general function to extract average
+morphometric traits at the lowest available taxonomic rank.
 It works with taxa identified at different taxonomic ranks.
 Some trait-specific functions are also provided:
 \itemize{
@@ -48,13 +62,13 @@ if you want the aspect ratio of the caudal fin, you can use
 "\code{aspect_ratio = AspectRatio}", where \code{aspect_ratio} is the trait name
 that you will find in the output and \code{AspectRatio} is the variable
 name in the FishBase morphometric table. This is exactly what
-\code{aspect_ratio_FB} does.
+\code{aspect_ratio_FB()} does.
 
 If you want a composite trait, use the expression "\code{user_trait_name = formula}",
 where the formula must only use variable names present in the FishBase
 morphometric table. For instance, if you want the eye diameter standardised
 by head length (as presented in FishBase), use "\code{eye_diameter = ED/HL}",
-where \code{ED} and \code{HL} are the variable names for eye diameter and head length
+where \code{ED} and \code{HL} are the variable names for eye diameter and head length,
 respectively.
 
 Multiple expressions can be used to extract multiple traits simultaneously.
@@ -65,7 +79,9 @@ the table.
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # List of taxa identified to species, genus or family level
-taxa <- c("Caesio cuning", "Acanthurus sp.", "Chaetodontidae spp.")
+species <- c("Caesio cuning", "Acanthurus sp.", "Chaetodontidae spp.")
+ranks <- c("species", "genus", "family")
+taxa <- build_fish_taxonomy(species, ranks)
 # Aspect ratio
 aspect_ratio_FB(taxa)
 # User-specified traits, e.g. eye diameter standardised by head length (ED/HL)

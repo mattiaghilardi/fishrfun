@@ -2,7 +2,7 @@
 #'
 #' @description
 #' `max_length_FB` extracts the observed or estimated species maximum length
-#' (total, standard, or both). It also works with taxa identified at different
+#' (total, standard, or both). It also works with taxa identified at higher
 #' taxonomic ranks. In this case it returns the maximum length among
 #' all the species belonging to the rank.
 #'
