@@ -20,4 +20,7 @@ test_that("We can retrieve fish morphometry", {
                  "eye_diameter.rank", "eye_diameter.pics"))
   expect_type(eye$eye_diameter.pics, "list")
 
+  # test that throws error if no traits are requested
+  expect_error(morphometric_traits_FB(df), "No traits requested")
+
 })
