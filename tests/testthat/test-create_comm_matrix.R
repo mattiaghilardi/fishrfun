@@ -22,5 +22,9 @@ test_that("We can create community composition matrices", {
   expect_error(create_comm_matrix(data, "abundance", "site", "species"))
   expect_error(create_comm_matrix(data, "site", "abundance", "species"))
   expect_error(create_comm_matrix(data, "site", "species", "site"))
+  # test that correctly throws message
+  expect_message(create_comm_matrix(data, "site", "species",
+                                    values_var = NULL, relative = TRUE),
+                 "Relative values are not calculated if `values_var = NULL`")
 
 })
