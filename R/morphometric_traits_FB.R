@@ -88,7 +88,6 @@ morphometric_traits_FB <- function(names,
 
   # Add trait(s)
   args <- rlang::quos(...)
-  trait_names <- names(args)
   n_traits <- length(args)
 
   if (n_traits == 0) cli::cli_abort("No traits requested")
@@ -97,9 +96,10 @@ morphometric_traits_FB <- function(names,
     1:n_traits,
     function(i) {
 
-      morph2 <- morph %>%
-        dplyr::mutate(!!! args[i]) %>%
-        dplyr::rename("trait" = trait_names[i])
+      morph2 <- dplyr::mutate(morph, !!! args[i])
+      # Get trait name, also for unnamed traits which are renamed by mutate
+      trait_name <- colnames(morph2)[ncol(morph2)]
+      morph2 <- dplyr::rename(morph2, "trait" = trait_name)
 
       # Get average trait for each species
       morph2 <- taxo %>%
@@ -218,8 +218,8 @@ morphometric_traits_FB <- function(names,
         dplyr::bind_rows()
 
       morph2 %>%
-        dplyr::rename("{trait_names[i]}" := "trait_mean") %>%
-        dplyr::rename_with(~ gsub("trait_", paste0(trait_names[i], "."), .x, fixed = TRUE))
+        dplyr::rename("{trait_name}" := "trait_mean") %>%
+        dplyr::rename_with(~ gsub("trait_", paste0(trait_name, "."), .x, fixed = TRUE))
     }) %>%
     purrr::reduce(dplyr::left_join, by = "submitted_name")
 
