@@ -14,13 +14,14 @@ create_comm_matrix(
 )
 }
 \arguments{
-\item{data}{A long-format data frame}
+\item{data}{A long-format data frame or data frame extension (e.g. a tibble)}
 
 \item{rows_var}{A string; the variable in \code{data} to be used as rows}
 
 \item{cols_var}{A string; the variable in \code{data} to be used as columns}
 
-\item{values_var}{A string; the variable in \code{data} to be used as values}
+\item{values_var}{A string; the variable in \code{data} to be used as values.
+If NULL (default) an incidence matrix (presence/absence) is returned}
 
 \item{relative}{Logical; if values should be converted into relative
 to the sum in each row. Default to \code{FALSE}}

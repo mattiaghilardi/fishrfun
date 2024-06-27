@@ -3,10 +3,11 @@
 #' A generic function to create matrices of community composition, with
 #' flexibility in the choice of variables to use as rows, columns and values
 #'
-#' @param data A long-format data frame
+#' @param data A long-format data frame or data frame extension (e.g. a tibble)
 #' @param rows_var A string; the variable in `data` to be used as rows
 #' @param cols_var A string; the variable in `data` to be used as columns
-#' @param values_var A string; the variable in `data` to be used as values
+#' @param values_var A string; the variable in `data` to be used as values.
+#' If NULL (default) an incidence matrix (presence/absence) is returned
 #' @param relative Logical; if values should be converted into relative
 #' to the sum in each row. Default to `FALSE`
 #' @param as_matrix Logical; if the function should return a matrix.
