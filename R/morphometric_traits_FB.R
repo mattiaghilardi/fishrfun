@@ -99,7 +99,7 @@ morphometric_traits_FB <- function(names,
       morph2 <- dplyr::mutate(morph, !!! args[i])
       # Get trait name, also for unnamed traits which are renamed by mutate
       trait_name <- colnames(morph2)[ncol(morph2)]
-      morph2 <- dplyr::rename(morph2, "trait" = trait_name)
+      morph2 <- dplyr::rename(morph2, "trait" = dplyr::all_of(trait_name))
 
       # Get average trait for each species
       morph2 <- taxo %>%

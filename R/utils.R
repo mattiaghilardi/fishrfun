@@ -1,6 +1,6 @@
 #' Checks
 #'
-#' @importFrom rlang caller_arg caller_env is_string is_character is_logical
+#' @importFrom rlang caller_arg caller_env is_string is_character is_logical is_list
 #' @importFrom cli cli_abort
 #' @importFrom curl has_internet
 #' @noRd
@@ -28,6 +28,14 @@ check_logical <- function(x,
                           call = rlang::caller_env()) {
   if (!rlang::is_logical(x)) {
     cli::cli_abort("{.arg {arg}} must be logical.", call = call)
+  }
+}
+
+check_list <- function(x,
+                       arg = rlang::caller_arg(x),
+                       call = rlang::caller_env()) {
+  if (!rlang::is_list(x)) {
+    cli::cli_abort("{.arg {arg}} must be a list.", call = call)
   }
 }
 

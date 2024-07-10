@@ -10,8 +10,9 @@
 #'
 #' @return A data frame with the provided name(s), means and standard deviations
 #' of *a* and *b*, and the method used. Further information about the applied
-#' method can be found in the [paper](https://doi.org/10.1111/jai.12299) and
-#' [here](https://fishbase.se/fishonline/english/fol_fishbasegoesfishbayes.htm).
+#' method can be found in [Froese et al. 2014](https://doi.org/10.1111/jai.12299)
+#' and [here](https://fishbase.se/fishonline/english/fol_fishbasegoesfishbayes.htm)
+#' on FishBase.
 #'
 #' @importFrom dplyr ends_with
 #'
@@ -23,11 +24,10 @@
 #' <https://doi.org/10.1111/jai.12299>
 #'
 #' @examplesIf interactive()
-#' # List of taxa identified to species, genus or family level
+#' # Length-weight parameters of fishes identified to species, genus or family level
 #' species <- c("Dentex dentex", "Labrus sp.", "Scombridae spp.")
 #' ranks <- c("species", "genus", "family")
 #' taxa <- build_fish_taxonomy(species, ranks)
-#' #  of fishes identified to species, genus or family level
 #' lw_params_FB(taxa)
 #'
 #' @export

@@ -16,8 +16,9 @@ Will default to the latest available; see \code{\link[rfishbase:available_releas
 \value{
 A data frame with the provided name(s), means and standard deviations
 of \emph{a} and \emph{b}, and the method used. Further information about the applied
-method can be found in the \href{https://doi.org/10.1111/jai.12299}{paper} and
-\href{https://fishbase.se/fishonline/english/fol_fishbasegoesfishbayes.htm}{here}.
+method can be found in \href{https://doi.org/10.1111/jai.12299}{Froese et al. 2014}
+and \href{https://fishbase.se/fishonline/english/fol_fishbasegoesfishbayes.htm}{here}
+on FishBase.
 }
 \description{
 \code{lw_params_FB} extracts the \emph{a} and \emph{b} parameters of the length-weight
@@ -27,11 +28,10 @@ It works with taxa identified at different taxonomic ranks.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-# List of taxa identified to species, genus or family level
+# Length-weight parameters of fishes identified to species, genus or family level
 species <- c("Dentex dentex", "Labrus sp.", "Scombridae spp.")
 ranks <- c("species", "genus", "family")
 taxa <- build_fish_taxonomy(species, ranks)
-#  of fishes identified to species, genus or family level
 lw_params_FB(taxa)
 \dontshow{\}) # examplesIf}
 }

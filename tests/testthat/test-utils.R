@@ -20,9 +20,12 @@ test_that("Argument checks work", {
   expect_error(check_string(1))
   expect_error(check_character(1))
   expect_error(check_logical(1))
+  expect_error(check_list(1))
   expect_error(check_length(1:3, 1:5))
   expect_error(check_version("FB", "23"))
   expect_error(check_names_arg(names = NULL))
+
+  skip_if_offline()
   df <- check_names_arg(c("Dentex dentex", "Mullus sp.", "Balistidae spp."),
                         version = "latest")
   expect_s3_class(df, "data.frame")
