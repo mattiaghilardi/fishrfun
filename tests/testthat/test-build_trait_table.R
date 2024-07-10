@@ -12,6 +12,7 @@ test_that("We can build a trait table", {
 
   # test that throws error if some elements in fns are not functions
   fns[[2]] <- 1
-  expect_error(build_trait_table(taxa, fns, args))
+  expect_error(build_trait_table(df, fns, args),
+               "All elements in `fns` must be functions")
 
 })
