@@ -213,9 +213,19 @@ build_fish_taxonomy <- function(names,
       dplyr::bind_rows()
 
     if (nrow(error) > 0) {
+
+      # Remove errors
+      df <- df %>%
+        dplyr::filter(!.data$original_name %in% error$original_name)
+
       f <- function() {
+        if (nrow(df) == 0)
+          cli::cli_abort("All names are incorrect or misspelled,
+                          not possible to build the taxonomy\n
+                          {.fn check_fish_names} may help",
+                         call = rlang::caller_env())
         cli::cli_alert_danger("{.val {nrow(error)}} {?name/names} {?is/are}
-                              incorrect or misspelled:",
+                            incorrect or misspelled:",
                               wrap = TRUE)
         cli::cli_text("")
         print(error)
@@ -224,10 +234,6 @@ build_fish_taxonomy <- function(names,
         cli::cli_alert_info("Building taxonomy only for valid names")
       }
       f()
-
-      # Remove errors
-      df <- df %>%
-        dplyr::filter(!.data$original_name %in% error$original_name)
     }
   }
 

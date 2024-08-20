@@ -3,7 +3,7 @@
 #' @description
 #' `nutrients_FB` extracts the concentrations of seven key nutrients in fish:
 #' calcium (mg per 100 g), iron (mg per 100 g), omega-3 fatty acids (g per 100 g),
-#' protein (%), selenium (&mu;g per 100 g), vitamin A (mg per 100 g), and
+#' protein (%), selenium (&mu;g per 100 g), vitamin A (&mu;g per 100 g), and
 #' zinc (mg per 100 g). These are estimated by a Bayesian model (available
 #' [here](https://github.com/mamacneil/NutrientFishbase)) which includes
 #' phylogenetic and traits information, an update of the model in
