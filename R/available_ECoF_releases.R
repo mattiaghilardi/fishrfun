@@ -42,6 +42,7 @@ available_ECoF_releases <- memoise::memoise(
 #' @importFrom rfishbase available_releases
 #' @noRd
 latest_release <- function(db = c("FB", "ECoF")) {
-  if (db == "FB") rfishbase::available_releases()[1]
-  else if (db == "ECoF") available_ECoF_releases()[1]
+  releases <- if (db == "FB") rfishbase::available_releases()
+    else if (db == "ECoF") available_ECoF_releases()
+  max(releases)
 }
