@@ -93,7 +93,7 @@ check_names_arg <- function(names,
       names <- build_fish_taxonomy(names = names,
                                    id.rank = NULL,
                                    check_names = TRUE,
-                                   colname = "original name",
+                                   colname = "original_name",
                                    db = "FB",
                                    version = version)
     } else {

@@ -38,4 +38,7 @@ test_that("We can build fish taxonomy", {
                  "Building taxonomy only for valid names")
   # and wrong names are removed
   expect_equal(nrow(df), 2)
+
+  # test that throws error if all names are wrong
+  expect_error(build_fish_taxonomy("Dentex dente", "species"))
 })
