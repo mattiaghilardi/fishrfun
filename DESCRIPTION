@@ -13,6 +13,7 @@ BugReports: https://github.com/mattiaghilardi/fishrfun/issues
 Depends: 
     R (>= 4.0)
 Imports: 
+    ape,
     cli (>= 3.0.0),
     curl,
     dplyr (>= 1.1.0),
