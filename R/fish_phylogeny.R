@@ -43,20 +43,37 @@
 build_tree_from_taxonomy <- function(taxonomy,
                                      formula = ~class/order/family/genus/species) {
 
+  check_df(taxonomy)
   # check that all variables in formula are present in taxonomy
-  taxo_colnames <- stringi::stri_split(as.character(formula), fixed = "/")[[2]]
-  if(!is.data.frame(taxonomy) |
-     !all(taxo_colnames %in% colnames(taxonomy))
-  ) {
-    cli::cli_abort("{.arg taxonomy} must be a data frame with one column
-                   for each taxonomic variable in {.arg formula}:
-                   {.val {taxo_colnames}}.",
-                   call = rlang::caller_env())
+  taxo_vars <- stringi::stri_split(as.character(formula), fixed = "/")[[2]]
+  possible_vars <- colnames(taxonomy)
+  missing <- taxo_vars[!taxo_vars %in% possible_vars]
+  if(length(missing) > 0) {
+    msg <- "{.val {missing}} {?is/are} not present in {.arg taxonomy}."
+    # try to suggest the most probable variable names
+    probable_vars <- sapply(missing,
+                            function(i) {
+                              x <- find_best_match(i, possible_vars)
+                              if (is.na(x))
+                                # try partial matching
+                                x <- possible_vars[pmatch(i, possible_vars)]
+                              x
+                            })
+    if (all(!is.na(probable_vars))) {
+      msg <- paste(msg, "Did you mean {.val {probable_vars}}?")
+    } else if (any(!is.na(probable_vars))) {
+      # if one or more NAs keep only found matches
+      probable_vars <- probable_vars[!is.na(probable_vars)]
+      msg <- paste(msg,
+                   "Did you mean {.val {probable_vars}} instead of
+                    {.val {names(probable_vars)}}?")
+    }
+    cli::cli_abort(msg, call = rlang::caller_env())
   }
 
   # replace potential NAs with empty character and change to factor
   df <- taxonomy %>%
-    dplyr::select(dplyr::all_of(taxo_colnames)) %>%
+    dplyr::select(dplyr::all_of(taxo_vars)) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(),
                                 ~tidyr::replace_na(.x, "") %>%
                                   as.factor()))

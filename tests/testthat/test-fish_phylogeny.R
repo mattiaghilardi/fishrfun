@@ -16,7 +16,10 @@ test_that("We can build tree from taxonomy", {
   expect_equal(tree$edge.length, rep(1, length(tree$edge.length)))
 
   # check that throws error if taxonomy not a data frame
-  taxa <- as.matrix(taxa)
-  expect_error(build_tree_from_taxonomy(taxa))
-
+  taxa_matrix <- as.matrix(taxa)
+  expect_error(build_tree_from_taxonomy(taxa_matrix))
+  # check that throws error if any taxonomic variable in formula is not present in taxonomy
+  expect_error(build_tree_from_taxonomy(taxa, formula = ~class/order/family/genus/sp))
+  # case where not all wrong variables are matched
+  expect_error(build_tree_from_taxonomy(taxa, formula = ~class/order/family/genus/sp/subsp))
 })
