@@ -21,7 +21,9 @@ test_that("Argument checks work", {
   expect_error(check_character(1))
   expect_error(check_logical(1))
   expect_error(check_list(1))
-  expect_error(check_length(1:3, 1:5))
+  expect_error(check_df(1))
+  expect_error(check_equal_length(1:3, 1:5))
+  expect_error(check_different_vars(1, 1))
   expect_error(check_version("FB", "23"))
   expect_error(check_names_arg(names = NULL))
 

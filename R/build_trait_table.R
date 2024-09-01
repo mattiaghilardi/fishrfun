@@ -39,7 +39,7 @@ build_trait_table <- function(names,
   names <- check_names_arg(names, version = version)
   check_list(fns)
   check_list(args)
-  check_length(args, fns)
+  check_equal_length(args, fns)
   if (!all(purrr::map_lgl(fns, rlang::is_function))) {
     cli::cli_abort("All elements in {.arg fns} must be functions",
                    call = rlang::caller_env())

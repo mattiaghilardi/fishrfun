@@ -35,7 +35,8 @@ load_fish_taxonomy <- function(db = c("FB", "ECoF"),
       dplyr::filter(!is.na(Class))
   } else if (db == "ECoF") {
     db <- load_ECoF_db(version)
-    db$taxonomy
+    db$taxonomy %>%
+      dplyr::mutate(spid = as.numeric(.data$spid))
   }
 }
 
@@ -127,7 +128,7 @@ build_fish_taxonomy <- function(names,
 
     # Check id.rank
     check_character(id.rank)
-    check_length(id.rank, names)
+    check_equal_length(id.rank, names)
 
     id.values <- c("species", "genus", "family", "order", "class")
     if (!all(unique(id.rank) %in% id.values)) {

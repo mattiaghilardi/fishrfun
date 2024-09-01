@@ -18,10 +18,12 @@ test_that("We can create community composition matrices", {
   expect_equal(rowSums(df), c(a = 1, b = 1))
 
   # test that correctly throws errors
+  expect_error(create_comm_matrix(as.matrix(data), "site", "species", NULL))
   expect_error(create_comm_matrix(data, "site", "species", "biomass"))
   expect_error(create_comm_matrix(data, "abundance", "site", "species"))
   expect_error(create_comm_matrix(data, "site", "abundance", "species"))
   expect_error(create_comm_matrix(data, "site", "species", "site"))
+  expect_error(create_comm_matrix(data, "site", "site", "abundance"))
   # test that correctly throws message
   expect_message(create_comm_matrix(data, "site", "species",
                                     values_var = NULL, relative = TRUE),

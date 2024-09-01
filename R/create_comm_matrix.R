@@ -57,26 +57,29 @@ create_comm_matrix <- function(data,
                                relative = FALSE,
                                as_matrix = TRUE) {
 
-  # TO DO: check data
+  # Checks
+  check_df(data)
   check_string(rows_var)
   check_string(cols_var)
+  check_different_vars(rows_var, cols_var)
   if (!rlang::is_null(values_var)) check_string(values_var)
   vars <- c(rows_var, cols_var, values_var)
   wrong_vars <- vars[!vars %in% colnames(data)]
   if (length(wrong_vars) > 0)
     cli::cli_abort("{.val {wrong_vars}} {?is/are} not present in {.arg data}.")
 
-  if (!rlang::is_character(data[[rows_var]]))
-    cli::cli_abort("{.arg rows_var} must be a character column in {.arg data}.")
-  if (!rlang::is_character(data[[cols_var]]))
-    cli::cli_abort("{.arg cols_var} must be a character column in {.arg data}.")
+  if (!rlang::is_character(data[[rows_var]]) & !is.factor(data[[rows_var]]))
+    cli::cli_abort("{.arg rows_var} must be a character or factor variable in {.arg data}.")
+  if (!rlang::is_character(data[[cols_var]]) & !is.factor(data[[cols_var]]))
+    cli::cli_abort("{.arg cols_var} must be a character or factor variable in {.arg data}.")
   if (!rlang::is_null(values_var))
     if (!rlang::is_double(data[[values_var]]))
-    cli::cli_abort("{.arg values_var} must be a numeric column in {.arg data}.")
+    cli::cli_abort("{.arg values_var} must be a numeric variable in {.arg data}.")
 
   check_logical(relative)
   check_logical(as_matrix)
 
+  # Rearrange data
   data <- data |>
     dplyr::select(dplyr::any_of(vars)) |>
     dplyr::group_by(dplyr::across(dplyr::all_of(vars[1:2]))) |>

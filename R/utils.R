@@ -39,13 +39,34 @@ check_list <- function(x,
   }
 }
 
-check_length <- function(x,
-                         y,
-                         arg1 = rlang::caller_arg(x),
-                         arg2 = rlang::caller_arg(y),
-                         call = rlang::caller_env()) {
+check_df <- function(x,
+                       arg = rlang::caller_arg(x),
+                       call = rlang::caller_env()) {
+  if (!is.data.frame(x)) {
+    cli::cli_abort("{.arg {arg}} must be a data frame or data frame extension
+                   (e.g. a tibble).",
+                   call = call)
+  }
+}
+
+check_equal_length <- function(x,
+                               y,
+                               arg1 = rlang::caller_arg(x),
+                               arg2 = rlang::caller_arg(y),
+                               call = rlang::caller_env()) {
   if (length(x) != length(y)) {
     cli::cli_abort("{.arg {arg1}} and {.arg {arg2}} must have the same length.",
+                   call = call)
+  }
+}
+
+check_different_vars <- function(x,
+                                 y,
+                                 arg1 = rlang::caller_arg(x),
+                                 arg2 = rlang::caller_arg(y),
+                                 call = rlang::caller_env()) {
+  if (x == y) {
+    cli::cli_abort("{.arg {arg1}} and {.arg {arg2}} must be different.",
                    call = call)
   }
 }
